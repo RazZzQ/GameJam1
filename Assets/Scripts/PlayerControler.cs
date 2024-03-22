@@ -21,32 +21,27 @@ public class PlayerControler : MonoBehaviour
         MaxStamina = 100;
         CurrentStamina = MaxStamina;
         StaminaMultiplierRester = 15;
+        Isruning = false;
         CanRun = true;
     }
     private void Update()
     {
-        if(CurrentStamina < 0)
-        {
-            CanRun = false;
-        }
-        else
-        {
-            CanRun = true;
-        }
-        if (Isruning == true)
+        transform.position = transform.position + speed * velocity;
+
+        if (Isruning == true && speed != Vector3.zero)
         {
             CurrentStamina -= Time.deltaTime * StaminaMultiplierRester;
         }
-        else{
-            StartCoroutine(MoreStaminaLapse());
+        else
+        {
+            //ACA SE RECUPERA LA ESTAMINA
         }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.position = transform.position + speed * velocity;
-
+        
     }
     public void movement(InputAction.CallbackContext context)
     {
@@ -54,28 +49,23 @@ public class PlayerControler : MonoBehaviour
     }
     public void run(InputAction.CallbackContext context)
     {
-        if (context.performed && CanRun == true)
+        if(CurrentStamina >= 0)
         {
-            if(CurrentStamina >= 0)
+            if (context.performed)
             {
                 Isruning = true;
                 velocity *= 2;
             }
-        }
-        else if (context.canceled)
-        {
-            if(CanRun == false) 
+            else if (context.canceled)
             {
                 velocity /= 2;
+                Isruning = false;
             }
-            Isruning = false;
         }
-        
     }
     public IEnumerator MoreStaminaLapse()
     {
         yield return new WaitForSeconds(10);
         Debug.Log("wasaaaaaaaaaaaa");
     }
-
 }
