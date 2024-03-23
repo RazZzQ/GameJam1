@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -15,8 +16,17 @@ public class PlayerControler : MonoBehaviour
     [SerializeField] float StaminaMultiplierAdded;
     [SerializeField] bool CanRun;
     [SerializeField] float Timer;
+    public event Action StaminaZero;
     Vector3 speed;
 
+    private void OnEnable()
+    {
+        StaminaZero += activateMoreStaminaLapse;
+    }
+    private void OnDisable()
+    {
+        StaminaZero -= activateMoreStaminaLapse;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -40,11 +50,8 @@ public class PlayerControler : MonoBehaviour
                 Isrunning = false;
                 CanRun = false;
                 velocity /= 2; // Reduce la velocidad a la normal.
+                StaminaZero?.Invoke();
             }
-        }
-        if(CurrentStamina <= 0) 
-        {
-            StartCoroutine(MoreStaminaLapse());
         }
     }
     // Update is called once per frame
@@ -74,9 +81,16 @@ public class PlayerControler : MonoBehaviour
             }
         }
     }
+    void activateMoreStaminaLapse()
+    {
+        if (CurrentStamina <= 0)
+        {
+            StartCoroutine(MoreStaminaLapse());
+        }
+    }
     public IEnumerator MoreStaminaLapse()
     {
         yield return new WaitForSeconds(3);
-        CurrentStamina = CurrentStamina + 0.01f; 
+        CurrentStamina = CurrentStamina + 0.01f;   
     }
 }
