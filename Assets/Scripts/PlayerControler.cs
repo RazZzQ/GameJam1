@@ -11,8 +11,10 @@ public class PlayerControler : MonoBehaviour
     [SerializeField] float CurrentStamina;
     [SerializeField] float StaminaMultiplierRester;
     [SerializeField] float velocity;
-    [SerializeField] bool Isruning;
+    [SerializeField] bool Isrunning;
+    [SerializeField] float StaminaMultiplierAdded;
     [SerializeField] bool CanRun;
+    [SerializeField] float Timer;
     Vector3 speed;
 
     // Start is called before the first frame update
@@ -21,23 +23,30 @@ public class PlayerControler : MonoBehaviour
         MaxStamina = 100;
         CurrentStamina = MaxStamina;
         StaminaMultiplierRester = 15;
-        Isruning = false;
+        StaminaMultiplierAdded = 15;
+        Isrunning = false;
         CanRun = true;
     }
     private void Update()
     {
         transform.position = transform.position + speed * velocity;
 
-        if (Isruning == true && speed != Vector3.zero)
+        if (Isrunning == true && speed != Vector3.zero)
         {
             CurrentStamina -= Time.deltaTime * StaminaMultiplierRester;
+
+            if (CurrentStamina <= 0)
+            {
+                Isrunning = false;
+                CanRun = false;
+                velocity /= 2; // Reduce la velocidad a la normal.
+            }
         }
-        else
+        if(CurrentStamina <= 0) 
         {
-            //ACA SE RECUPERA LA ESTAMINA
+            StartCoroutine(MoreStaminaLapse());
         }
     }
-
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -53,19 +62,21 @@ public class PlayerControler : MonoBehaviour
         {
             if (context.performed)
             {
-                Isruning = true;
+                CanRun = true;
+                Isrunning = true;
                 velocity *= 2;
             }
             else if (context.canceled)
             {
                 velocity /= 2;
-                Isruning = false;
+                Isrunning = false;
+                CanRun=false;
             }
         }
     }
     public IEnumerator MoreStaminaLapse()
     {
-        yield return new WaitForSeconds(10);
-        Debug.Log("wasaaaaaaaaaaaa");
+        yield return new WaitForSeconds(3);
+        CurrentStamina = CurrentStamina + 0.01f; 
     }
 }
