@@ -91,6 +91,6 @@ public class PlayerControler : MonoBehaviour
     public IEnumerator MoreStaminaLapse()
     {
         yield return new WaitForSeconds(3);
-        CurrentStamina = CurrentStamina + 0.01f;   
+        CurrentStamina = CurrentStamina + 0.01f * Time.deltaTime;   
     }
 }
